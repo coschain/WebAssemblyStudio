@@ -263,6 +263,77 @@ export class Service {
     return result.wasm;
   }
 
+  static async compileAbi(file: File, from: Language, to: Language): Promise<any> {
+    //
+    if (to !== Language.abi) {
+      throw new Error(`Only abi target is supported, but "${to}" was found`);
+    }
+    const result = await Service.compileAbiFiles([file], from, to);
+    const expectedOutputFilename = "a.abi";
+    let output: any = {
+      abi: result[expectedOutputFilename],
+    };
+    
+    return output.abi;
+    //
+  }
+
+  static async compileAbiFiles(files: File[], from: Language, to: Language): Promise<{ [name: string]: (string|ArrayBuffer); }> {
+    gaEvent("compile", "Service", `${from}->${to}`);
+
+    const service = await createCompilerService(from, to);
+
+    const fileNameMap: {[name: string]: File} = files.reduce((acc: any, f: File) => {
+      acc[getProjectFilePath(f)] = f;
+      return acc;
+    }, {} as any);
+
+    const input = {
+      files: files.reduce((acc: any, f: File) => {
+        acc[getProjectFilePath(f)] = {
+          content: f.getData(),
+        };
+        return acc;
+      }, {} as any),
+    };
+    const result = await service.compile(input);
+
+    for (const file of files) {
+      file.setProblems([]);
+    }
+
+    for (const [ name, item ] of Object.entries(result.items)) {
+      const { fileRef, console } = item;
+      if (!fileRef || !console) {
+        continue;
+      }
+      const file = fileNameMap[fileRef];
+      if (!file) {
+        continue;
+      }
+      const markers = Service.getMarkers(console);
+      if (markers.length > 0) {
+        monaco.editor.setModelMarkers(file.buffer, "abi compiler", markers);
+        file.setProblems(markers.map(marker => {
+          return Problem.fromMarker(file, marker);
+        }));
+      }
+    }
+
+    if (!result.success) {
+      throw new Error(result.console);
+    }
+
+    const outputFiles: any = {};
+    for (const [ name, item ] of Object.entries(result.items)) {
+      const { content } = item;
+      if (content) {
+        outputFiles[name] = content;
+      }
+    }
+    return outputFiles;
+  }
+
   static async compileFileWithBindings(file: File, from: Language, to: Language, options = ""): Promise<any> {
     if (to !== Language.Wasm) {
       throw new Error(`Only wasm target is supported, but "${to}" was found`);

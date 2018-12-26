@@ -32,7 +32,8 @@ export enum Language {
   Toml = "toml",
   Text = "text",
   h = "h",
-  hpp = "hpp"
+  hpp = "hpp",
+  abi = "abi"
 }
 
 export interface InputFile {

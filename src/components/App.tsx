@@ -28,7 +28,7 @@ import { EditorView, ViewTabs, View, Tab, Tabs } from "./editor";
 import { Header } from "./Header";
 import { Toolbar } from "./Toolbar";
 import { ViewType, defaultViewTypeForFileType } from "./editor/View";
-import { build, run, runTask, openFiles, pushStatus, popStatus } from "../actions/AppActions";
+import { abi, build, run, runTask, openFiles, pushStatus, popStatus } from "../actions/AppActions";
 
 import appStore from "../stores/AppStore";
 import {
@@ -515,6 +515,17 @@ export class App extends React.Component<AppProps, AppState> {
           build();
         }}
       />);
+      toolbarButtons.push(
+        <Button
+          key="Abi"
+          icon={<GoBeaker />}
+          label="Abi"
+          title="Gen Abi"
+          isDisabled={this.toolbarButtonsAreDisabled()}
+          onClick={() => {
+            abi();
+          }}
+        />);
     if (this.props.embeddingParams.type !== EmbeddingType.Arc) {
       toolbarButtons.push(
         <Button

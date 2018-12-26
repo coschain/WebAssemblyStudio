@@ -306,6 +306,25 @@ export async function runTask(
   }
 }
 
+export async function runAbiTask(
+  name: string,
+  optional: boolean = false,
+  externals: RunTaskExternals = RunTaskExternals.Default
+) {
+  // Runs the provided source in our fantasy gulp context
+  const run = async (src: string) => {
+    const project = appStore.getProject().getModel();
+    await runGulpTask(src, name, optional, project, logLn, externals);
+  };
+  let gulpfile;
+  if (gulpfile = appStore.getFileByName("abi.ts")) {
+    const output = await gulpfile.getModel().getEmitOutput();
+    await run(output.outputFiles[0].text);
+  } else {
+    logLn(Errors.BuildFileMissing, "error");
+  }
+}
+
 export async function run() {
   const mainFileName = "src/main.html";
   const projectModel = appStore.getProject().getModel();
@@ -331,6 +350,12 @@ export async function run() {
 export async function build() {
   pushStatus("Building Project");
   await runTask("build");
+  popStatus();
+}
+
+export async function abi() {
+  pushStatus("Gen Abi");
+  await runAbiTask("abi");
   popStatus();
 }
 

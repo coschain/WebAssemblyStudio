@@ -22,6 +22,7 @@
 export interface IConfig {
   serviceUrl: string;
   clang: string;
+  abi: string;
   rustc: string;
   cargo: string;
   templates: { [name: string]: string };
