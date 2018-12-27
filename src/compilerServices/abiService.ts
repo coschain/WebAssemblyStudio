@@ -48,14 +48,15 @@ export class AbiService implements CompilerService {
 
     const project = {
       output: "abi",
-      compress: true,
+      compress: false,
       files:File(inputFile,files)
     };
     const result = await sendRequestJSON(project, ServiceTypes.Abi);
     const items: any = {};
     let content;
     if (result.success) {
-      content = await decodeBinary(result.output);
+      content = result.output;
+      //content = await decodeBinary(result.output);
     }
     let console;
     if (result.tasks && result.tasks.length > 0) {

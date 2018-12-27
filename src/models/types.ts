@@ -40,7 +40,8 @@ export enum FileType {
   JSON       = "json",
   DOT        = "dot",
   TOML       = "toml",
-  Unknown    = "unknown"
+  Unknown    = "unknown",
+  Abi       = "abi"
 }
 
 export interface SandboxRun {
