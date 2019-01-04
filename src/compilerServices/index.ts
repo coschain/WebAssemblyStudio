@@ -43,7 +43,7 @@ export async function createCompilerService(from: Language, to: Language): Promi
   if (from === Language.Wasm && to === Language.x86) {
     return new X86Service();
   }
-  if (from == Language.hpp && to == Language.abi) {
+  if (from == Language.Cpp && to == Language.abi) {
     return new AbiService;
   }
   throw new Error(`createCompilerService: not supported ${from}->${to}`);
