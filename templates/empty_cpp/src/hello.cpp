@@ -1,5 +1,6 @@
 #include <cosiolib/contract.hpp>
 #include <cosiolib/print.hpp>
+#include "header.hpp"
 
 using timestamp_t = uint64_t;
 
@@ -31,6 +32,8 @@ public:
 
     void hi( cosio::account_name user ) {
 
+        A a;
+        a.foo();
         // load the global counter
         counter.get_or_create();
 
