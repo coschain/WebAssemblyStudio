@@ -111,7 +111,8 @@ export class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDi
                   this.setState({ fileType, description });
                 }}
               >
-                <ListItem value={FileType.C} label={"C File (.c)"} icon={getIconForFileType(FileType.C)} />
+                <ListItem value={FileType.H} label={"C File (.h)"} icon={getIconForFileType(FileType.H)} />
+                <ListItem value={FileType.Hpp} label={"C File (.hpp)"} icon={getIconForFileType(FileType.Hpp)} />
                 <ListItem value={FileType.Cpp} label={"C++ File (.cpp)"} icon={getIconForFileType(FileType.Cpp)} />
               </ListBox>
             </div>
