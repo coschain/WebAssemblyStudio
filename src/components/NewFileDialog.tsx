@@ -113,19 +113,6 @@ export class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDi
               >
                 <ListItem value={FileType.C} label={"C File (.c)"} icon={getIconForFileType(FileType.C)} />
                 <ListItem value={FileType.Cpp} label={"C++ File (.cpp)"} icon={getIconForFileType(FileType.Cpp)} />
-                <ListItem value={FileType.Rust} label={"Rust File (.rs)"} icon={getIconForFileType(FileType.Rust)} />
-
-                <ListItem value={FileType.Cretonne} label={"Cretonne (.cton)"} icon={getIconForFileType(FileType.Cretonne)} />
-                <ListItem value={FileType.Wat} label={"Wat (.wat)"} icon={getIconForFileType(FileType.Wat)} />
-
-                <ListItem value={FileType.JavaScript} label={"JavaScript (.js)"} icon={getIconForFileType(FileType.JavaScript)} />
-                <ListItem value={FileType.TypeScript} label={"TypeScript (.ts)"} icon={getIconForFileType(FileType.TypeScript)} />
-                <ListItem value={FileType.HTML} label={"HTML (.html)"} icon={getIconForFileType(FileType.HTML)} />
-                <ListItem value={FileType.CSS} label={"CSS (.css)"} icon={getIconForFileType(FileType.CSS)} />
-                <ListItem value={FileType.Markdown} label={"Markdown (.md)"} icon={getIconForFileType(FileType.Markdown)} />
-                <ListItem value={FileType.JSON} label={"JSON (.json)"} icon={getIconForFileType(FileType.JSON)} />
-                <ListItem value={FileType.DOT} label={"GraphViz DOT (.dot)"} icon={getIconForFileType(FileType.DOT)} />
-                <ListItem value={FileType.TOML} label={"TOML Document (.toml)"} icon={getIconForFileType(FileType.TOML)} />
               </ListBox>
             </div>
             <div className="new-file-dialog-description">

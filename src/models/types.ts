@@ -41,7 +41,9 @@ export enum FileType {
   DOT        = "dot",
   TOML       = "toml",
   Unknown    = "unknown",
-  Abi       = "abi"
+  Abi       = "abi",
+  Hpp       = "hpp",
+  H         = "h"
 }
 
 export interface SandboxRun {
@@ -93,6 +95,8 @@ export function languageForFileType(type: FileType): string {
     return "dot";
   } else if (type === FileType.TOML) {
     return "toml";
+  } else if (type === FileType.Hpp || type === FileType.H) {
+    return "cpp";
   }
   return "";
 }
@@ -126,6 +130,10 @@ export function nameForFileType(type: FileType): string {
     return "DOT";
   } else if (type === FileType.TOML) {
     return "TOML";
+  } else if (type === FileType.H) {
+    return "H";
+  } else if (type === FileType.Hpp) {
+    return "Hpp";
   }
   return "";
 }
@@ -159,6 +167,10 @@ export function extensionForFileType(type: FileType): string {
     return "dot";
   } else if (type === FileType.TOML) {
     return "toml";
+  } else if (type === FileType.H) {
+    return "h";
+  } else if (type === FileType.Hpp) {
+    return "hpp";
   }
   return "";
 }
@@ -196,6 +208,10 @@ export function fileTypeForExtension(extension: string): FileType {
     return FileType.DOT;
   } else if (extension === "toml") {
     return FileType.TOML;
+  } else if (extension === "h") {
+    return FileType.H;
+  } else if (extension === "hpp") {
+    return FileType.Hpp;
   }
   return null;
 }
