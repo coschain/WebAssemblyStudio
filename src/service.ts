@@ -263,12 +263,12 @@ export class Service {
     return result.wasm;
   }
 
-  static async compileAbi(file: File, from: Language, to: Language): Promise<any> {
+  static async compileAbi(files: File[], from: Language, to: Language): Promise<any> {
     //
     if (to !== Language.abi) {
       throw new Error(`Only abi target is supported, but "${to}" was found`);
     }
-    const result = await Service.compileAbiFiles([file], from, to);
+    const result = await Service.compileAbiFiles(files, from, to);
     const expectedOutputFilename = "a.abi";
     let output: any = {
       abi: result[expectedOutputFilename],
