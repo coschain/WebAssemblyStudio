@@ -1,5 +1,5 @@
 {
-  "name": "@wasm/empty_cpp",
+  "name": "@wasm/single_cpp_project",
   "description": "",
   "version": "1.0.0",
   "scripts": {
@@ -12,8 +12,8 @@
     "typescript": "~2.7.2"
   },
   "wasmStudio": {
-    "name": "Empty Cpp Project",
-    "description": "# Empty Cpp Project",
+    "name": "Single Cpp Project",
+    "description": "# Single Cpp Project",
     "icon": "cpp-lang-file-icon"
   }
 }
