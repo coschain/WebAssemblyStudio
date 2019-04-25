@@ -28,7 +28,7 @@ import { EditorView, ViewTabs, View, Tab, Tabs } from "./editor";
 import { Header } from "./Header";
 import { Toolbar } from "./Toolbar";
 import { ViewType, defaultViewTypeForFileType } from "./editor/View";
-import { abi, build, run, runTask, openFiles, pushStatus, popStatus } from "../actions/AppActions";
+import { abi, build, run, runTask, openFiles, pushStatus, popStatus, deploy, buildWsamAndAbi } from "../actions/AppActions";
 
 import appStore from "../stores/AppStore";
 import {
@@ -312,7 +312,7 @@ export class App extends React.Component<AppProps, AppState> {
 
   registerShortcuts() {
     Mousetrap.bind("command+b", () => {
-      build();
+      buildWsamAndAbi();
     });
     Mousetrap.bind("command+enter", () => {
       if (this.props.embeddingParams.type !== EmbeddingType.Arc) {
@@ -321,13 +321,13 @@ export class App extends React.Component<AppProps, AppState> {
         this.publishArc();
       }
     });
-    Mousetrap.bind("command+alt+enter", () => {
-      if (this.props.embeddingParams.type !== EmbeddingType.Arc) {
-        build().then(run);
-      } else {
-        build().then(() => this.publishArc());
-      }
-    });
+    // Mousetrap.bind("command+alt+enter", () => {
+    //   if (this.props.embeddingParams.type !== EmbeddingType.Arc) {
+    //     build().then(run);
+    //   } else {
+    //     build().then(() => this.publishArc());
+    //   }
+    // });
   }
   logLn(message: string, kind: "" | "info" | "warn" | "error" = "") {
     logLn(message, kind);
@@ -512,23 +512,23 @@ export class App extends React.Component<AppProps, AppState> {
         title="Build Project: CtrlCmd + B"
         isDisabled={this.toolbarButtonsAreDisabled()}
         onClick={() => {
-          build();
+          buildWsamAndAbi();
         }}
       />);
-      toolbarButtons.push(
-        <Button
-          key="Abi"
-          icon={<GoBeaker />}
-          label="Abi"
-          title="Gen Abi"
-          isDisabled={this.toolbarButtonsAreDisabled()}
-          onClick={() => {
-            abi();
-          }}
-        />);
+      // toolbarButtons.push(
+      //   <Button
+      //     key="Abi"
+      //     icon={<GoBeaker />}
+      //     label="Abi"
+      //     title="Gen Abi"
+      //     isDisabled={this.toolbarButtonsAreDisabled()}
+      //     onClick={() => {
+      //       abi();
+      //     }}
+      //   />);
     if (this.props.embeddingParams.type !== EmbeddingType.Arc) {
       toolbarButtons.push(
-        <Button
+        /*<Button
           key="Run"
           icon={<GoGear />}
           label="Run"
@@ -547,35 +547,46 @@ export class App extends React.Component<AppProps, AppState> {
           onClick={() => {
             build().then(run);
           }}
+        />,
+        */
+        <Button
+            key="Deploy"
+            icon={<GoBeakerGear />}
+            label="Deploy"
+            title="Deploy contact: CtrlCmd + d"
+            isDisabled={this.toolbarButtonsAreDisabled()}
+            onClick={() => {
+              deploy();
+            }}
         />
       );
     }
-    if (this.props.embeddingParams.type === EmbeddingType.Arc) {
-      toolbarButtons.push(
-        <Button
-          key="Preview"
-          icon={<GoGear />}
-          label="Preview"
-          title="Preview Project: CtrlCmd + Enter"
-          isDisabled={this.toolbarButtonsAreDisabled()}
-          onClick={() => {
-            this.publishArc();
-          }}
-        />
-      );
-      toolbarButtons.push(
-        <Button
-          key="BuildAndPreview"
-          icon={<GoGear />}
-          label="Build &amp; Preview"
-          title="Build &amp; Preview Project: CtrlCmd + Alt + Enter"
-          isDisabled={this.toolbarButtonsAreDisabled()}
-          onClick={() => {
-            build().then(() => this.publishArc());
-          }}
-        />
-      );
-    }
+    // if (this.props.embeddingParams.type === EmbeddingType.Arc) {
+    //   toolbarButtons.push(
+    //     <Button
+    //       key="Preview"
+    //       icon={<GoGear />}
+    //       label="Preview"
+    //       title="Preview Project: CtrlCmd + Enter"
+    //       isDisabled={this.toolbarButtonsAreDisabled()}
+    //       onClick={() => {
+    //         this.publishArc();
+    //       }}
+    //     />
+    //   );
+    //   toolbarButtons.push(
+    //     <Button
+    //       key="BuildAndPreview"
+    //       icon={<GoGear />}
+    //       label="Build &amp; Preview"
+    //       title="Build &amp; Preview Project: CtrlCmd + Alt + Enter"
+    //       isDisabled={this.toolbarButtonsAreDisabled()}
+    //       onClick={() => {
+    //         build().then(() => this.publishArc());
+    //       }}
+    //     />
+    //   );
+    // }
     if (this.props.embeddingParams.type === EmbeddingType.None) {
       toolbarButtons.push(
         <Button
@@ -684,6 +695,7 @@ export class App extends React.Component<AppProps, AppState> {
             this.setState({ newFileDialogDirectory: null });
           }}
           onCreate={(file: File) => {
+            console.log("create file dialog");
             addFileTo(file, this.state.newFileDialogDirectory.getModel());
             this.setState({ newFileDialogDirectory: null });
           }}

@@ -31,6 +31,17 @@ import { Errors } from "../errors";
 import getConfig from "../config";
 import { rewriteHTML, RewriteSourcesContext } from "../utils/rewriteSources";
 import { runTask as runGulpTask, RunTaskExternals } from "../utils/taskRunner";
+// @ts-ignore
+import netApi from "../webService/netApi";
+import {
+  ContractUtil, mdCachedPrivateKey, mdCacheContractName, getCachedPriKey,
+  getCachedAccountName, saveAccountName, mdCachedAccountName
+} from "../contractUtil";
+import {accessSync} from "fs";
+import {Toast, ToastContainer, ToastProps} from "../components/Toasts";
+import * as React from "react";
+import {start} from "repl";
+import {ContractInfoDialog, ContractInfoDialogProps} from "../components/ContractInfoDialog";
 
 export enum AppActionType {
   ADD_FILE_TO = "ADD_FILE_TO",
@@ -348,14 +359,21 @@ export async function run() {
 }
 
 export async function build() {
-  pushStatus("Building Project");
+  // pushStatus("Building Project");
   await runTask("build");
-  popStatus();
+  // popStatus();
 }
 
 export async function abi() {
-  pushStatus("Gen Abi");
+  // pushStatus("Gen Abi");
   await runAbiTask("abi");
+  // popStatus();
+}
+
+export async function buildWsamAndAbi() {
+  pushStatus("Building Wsam and Abi");
+  await build();
+  await abi();
   popStatus();
 }
 
@@ -371,4 +389,47 @@ export function setViewType(view: View, type: ViewType) {
     view,
     viewType: type
   } as SetViewType);
+}
+
+export async function deploy() {
+    const contract = ContractUtil.getContractByName("defaultContract");
+    // if (contract == null) {
+    //   alert("please build and create abi firstly");
+    //   return;
+    // }
+    const priKey = getCachedPriKey();
+    const account = getCachedAccountName();
+    const prop: ContractInfoDialogProps = {
+        contractName: null,
+        userPrivateKey: priKey,
+        accountName: account,
+        cancelHandler: null,
+        confirmHandler: async (name: string, priKey: string, account: string) => {
+            if (account && priKey && name && account.length > 0 && name.length > 0 && priKey.length > 0) {
+              mdCachedPrivateKey(priKey);
+              // First update default contract name in default contract info
+              ContractUtil.updateDefaultContractName(name);
+              // update cached contract name
+              mdCacheContractName(name);
+              // update cached account name
+              mdCachedAccountName(account);
+
+              pushStatus("Deploy contract");
+              const abi = contract.abi;
+              const code = contract.code;
+              const res = await netApi.deployContract(account, name, abi, code, priKey);
+              if (res.result == null || typeof res.result === "undefined") {
+                // Fail to deploy contract
+                console.log("error code is:%s,msg is:%s", res.errorCode, res.errorMsg);
+              } else {
+                console.log("deploy result is:", res);
+              }
+              popStatus();
+            }
+        }
+    };
+    const infoDialog = new ContractInfoDialog(prop);
+    infoDialog.showDialog();
+    return;
+
 }

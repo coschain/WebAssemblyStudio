@@ -1,0 +1,89 @@
+
+.contractInfoDialog-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    background-color: rgba(55,55,55,.6);;
+}
+
+.contractInfoDialog-card {
+    box-sizing: border-box;
+    border-radius: 6px;
+    width: 400px;
+    background-color: white;
+    padding: 30px;
+}
+
+.contractInfoDialog-headTitle {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+.contractInfoDialog-nameTitle {
+    font-size: 14px;
+    text-align: left;
+    color: black;
+    margin-top: 10px;
+}
+
+.contractInfoDialog-priKeyAndAcctTitle {
+    font-size: 14px;
+    text-align: left;
+    color: black;
+    margin-top: 20px;
+}
+
+.contractInfoDialog-input-container {
+    margin-top: 10px;
+    width: 100%;
+}
+.contractInfoDialog-Input {
+    padding: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 35px;
+}
+.contractInfoDialog-btnItem {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    justify-items: center;
+}
+
+.contractInfoDialog-btn {
+    border-radius: 4px;
+    border-style: none;
+    outline-style: none;
+    height: 30px;
+}
+
+.contractInfoDialog-btn:active {
+    opacity: 0.8;
+}
+
+.contractInfoDialog-confirmBtn {
+    background-color: #80bdff;
+}
+
+.contractInfoDialog-cancelBtn {
+    background-color: #d9534f;
+}
+
+@media (max-width: 640px) {
+    .contractInfoDialog-card{
+        width: 100%;
+        margin: 0 30px;
+    }
+}

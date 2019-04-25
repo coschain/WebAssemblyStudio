@@ -37,6 +37,7 @@ import registerTheme from "./utils/registerTheme";
 import { Logger } from "./utils/Logger";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
+
 declare var window: any;
 declare var WebAssembly: any;
 

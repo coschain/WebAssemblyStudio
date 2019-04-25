@@ -23,6 +23,7 @@ import { Project, fileTypeForExtension, mimeTypeForFileType } from "../models";
 import { Gulpy } from "../gulpy";
 import { Service } from "../service";
 import { Arc } from "../arc";
+import {ContractUtil} from "../contractUtil";
 
 export enum RunTaskExternals {
   Default,
@@ -168,6 +169,7 @@ export async function runTask(
     logLn,
     fileTypeForExtension,
     monaco: externals === RunTaskExternals.Setup ? monaco : undefined,
+    ContractUtil,
   }, {
     // modules
     "gulp": gulp,
@@ -178,6 +180,7 @@ export async function runTask(
       fileTypeForExtension,
       Arc: externals === RunTaskExternals.Arc ? Arc : undefined,
       eval: externals === RunTaskExternals.Setup ? unsafeEval : undefined,
+      ContractUtil,
     }
   })();
   if (gulp.hasTask(name)) {

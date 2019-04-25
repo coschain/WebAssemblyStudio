@@ -2,93 +2,96 @@
 #include <cosiolib/print.hpp>
 #include "header.hpp"
 
-using timestamp_t = uint64_t;
-
 // the database table record type
-struct greeting {
+struct checkin {
     cosio::name name;
-    uint32_t count;
-    timestamp_t last_seen;
+    uint64_t count;
 
     // record type must support serialization.
-    COSIO_SERIALIZE(greeting, (name)(count)(last_seen))
+    COSIO_SERIALIZE(checkin, (name)(count))
 };
 
-// the singleton record type, which must be derived from cosio::singleton_record.
-struct stats : public cosio::singleton_record {
-    stats(): users(0), visits(0) {}
-
-    uint32_t users;
-    uint32_t visits;
+// the database table record type
+struct post {
+    cosio::name name;
+    uint64_t count;
 
     // record type must support serialization.
-    COSIO_SERIALIZE_DERIVED(stats, cosio::singleton_record, (users)(visits))
+    COSIO_SERIALIZE(post, (name)(count))
+};
+
+// the database table record type
+struct comment {
+    uint64_t id;
+    cosio::name name;
+    std::string content;
+
+    // record type must support serialization.
+    COSIO_SERIALIZE(comment, (id)(name)(content) )
 };
 
 // the contract class
-class hello : public cosio::contract {
+class registercount : public cosio::contract {
 public:
     using cosio::contract::contract;
 
-    void hi( cosio::name user ) {
+    void checkincount( std::string user_str ) {
+      cosio::name user(user_str);
 
-        A a;
-        a.foo();
-        // load the global counter
-        counter.get_or_create();
-
-        // check if we have greeted this guy before
-        if(!table_greetings.has(user)) {
-            // first time meeting
-            table_greetings.insert([&](greeting& r) {
-                r.name = user;
-                r.count = 1;
-                              r.last_seen = cosio::current_timestamp();
-            });
-            counter.update([&](stats& s) {
-                s.users++;
-                s.visits++;
-            });
+        if(!table_checkin.has(user)) {
+          table_checkin.insert([&](checkin& r){
+            r.name = user;
+            r.count = 1;
+          });
         } else {
-            // increase the greeting counter
-            table_greetings.update(user, [&](greeting& r) {
-                r.count++;
-                r.last_seen = cosio::current_timestamp();
-            });
-            counter.update([&](stats& s) {
-                s.visits++;
-            });
+          table_checkin.update(user, [&](checkin& r){
+            r.count++;
+          });
         }
-        // print something
-        auto r = table_greetings.get(user);
-        auto s = counter.get();
-        cosio::print("Hello %, we have met % times. I have greeted % persons, % greetings in total.", user, r.count, s.users, s.visits);
+
+        auto r = table_checkin.get(user);
+        cosio::print_f("Hello %, we have met % times.", user, r.count);
+    }
+
+    void postcount( std::string user_str, uint64_t random ) {
+      cosio::name user(user_str);
+
+        if(!table_post.has(user)) {
+          table_post.insert([&](post& r){
+            r.name = user;
+            r.count = 1;
+          });
+        } else {
+          table_post.update(user, [&](post& r){
+            r.count++;
+          });
+        }
+
+        auto r = table_post.get(user);
+        cosio::print_f("Hello %, we have met % times.", user, r.count);
+    }
+
+    void commentcount( uint64_t id, std::string name, std::string content, uint64_t random ) {
+      if(!table_comment.has(id)) {
+        table_comment.insert([&](comment& r){
+          r.id = id;
+          r.name = name;
+          r.content = content;
+        });
+
+        auto r = table_comment.get(id);
+        cosio::print_f("Comment id: %, comment executor: %, content: %.", r.id, r.name, r.content);
+      } else {
+        cosio::cosio_assert(false, "Comment id has already exist.");
+      }
     }
 private:
-    //
-    // define a class data member named "table_greetings" representing the database table which,
-    // - has name "table_greetings", the same as variable name
-    // - has a record type of greeting
-    // - takes greeting::name as primary key
-    // - has 2 secondary indices taking greeting::count and greeting::last_seen as indexing fields respectively
-    //
-    COSIO_DEFINE_TABLE( table_greetings, greeting, (name)(count)(last_seen) );
 
-    //
-    // define a class data member named "table_hello" representing the database table which,
-    // - has name "hello"
-    // - has a record type of greeting
-    // - takes greeting::name as primary key
-    // - has no secondary indices
-    //
-    COSIO_DEFINE_NAMED_TABLE( table_hello, "hello", greeting, (name) );
+    COSIO_DEFINE_TABLE( table_checkin, checkin, (name)(count) );
 
-    //
-    // define a class data member named "counter" representing a singleton table which,
-    // - has name "global_counters"
-    // - has a record type of stats
-    //
-    COSIO_DEFINE_NAMED_SINGLETON( counter, "global_counters", stats );
+    COSIO_DEFINE_TABLE( table_post, post, (name)(count) );
+
+    COSIO_DEFINE_TABLE( table_comment, comment, (id)(name)(content) );
 };
 
-COSIO_ABI(hello, (hi))
+COSIO_ABI(registercount, (checkincount)(postcount)(commentcount) )
