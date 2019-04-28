@@ -28,7 +28,7 @@ import { EditorView, ViewTabs, View, Tab, Tabs } from "./editor";
 import { Header } from "./Header";
 import { Toolbar } from "./Toolbar";
 import { ViewType, defaultViewTypeForFileType } from "./editor/View";
-import { abi, build, run, runTask, openFiles, pushStatus, popStatus, deploy, buildWsamAndAbi } from "../actions/AppActions";
+import { abi, build, run, runTask, openFiles, pushStatus, popStatus, deploy, buildWsamAndAbi, switchNode} from "../actions/AppActions";
 
 import appStore from "../stores/AppStore";
 import {
@@ -456,54 +456,55 @@ export class App extends React.Component<AppProps, AppState> {
         />
       );
     }
-    if (this.props.embeddingParams.type === EmbeddingType.None ||
-        this.props.embeddingParams.type === EmbeddingType.Arc) {
-      toolbarButtons.push(
-        <Button
-          key="ForkProject"
-          icon={<GoRepoForked />}
-          label="Fork"
-          title="Fork Project"
-          isDisabled={this.toolbarButtonsAreDisabled()}
-          onClick={() => {
-            this.fork();
-          }}
-        />
-      );
-    }
-    if (this.props.embeddingParams.type === EmbeddingType.None) {
-      toolbarButtons.push(
-        <Button
-          key="CreateGist"
-          icon={<GoGist />}
-          label="Create Gist"
-          title="Create GitHub Gist from Project"
-          isDisabled={this.toolbarButtonsAreDisabled()}
-          onClick={() => {
-            this.gist();
-          }}
-        />,
-        <Button
-          key="Download"
-          icon={<GoDesktopDownload />}
-          label="Download"
-          title="Download Project"
-          isDisabled={this.toolbarButtonsAreDisabled()}
-          onClick={() => {
-            this.download();
-          }}
-        />,
-        <Button
-          key="Share"
-          icon={<GoRocket />}
-          label="Share"
-          title={this.state.fiddle ? "Share Project" : "Cannot share a project that has not been forked yet."}
-          isDisabled={this.toolbarButtonsAreDisabled() || !this.state.fiddle}
-          onClick={() => {
-            this.share();
-          }}
-        />);
-    }
+    // if (this.props.embeddingParams.type === EmbeddingType.None ||
+    //     this.props.embeddingParams.type === EmbeddingType.Arc) {
+    //   toolbarButtons.push(
+    //     <Button
+    //       key="ForkProject"
+    //       icon={<GoRepoForked />}
+    //       label="Fork"
+    //       title="Fork Project"
+    //       isDisabled={this.toolbarButtonsAreDisabled()}
+    //       onClick={() => {
+    //         this.fork();
+    //       }}
+    //     />
+    //   );
+    // }
+    // if (this.props.embeddingParams.type === EmbeddingType.None) {
+    //   toolbarButtons.push(
+    //     <Button
+    //       key="CreateGist"
+    //       icon={<GoGist />}
+    //       label="Create Gist"
+    //       title="Create GitHub Gist from Project"
+    //       isDisabled={this.toolbarButtonsAreDisabled()}
+    //       onClick={() => {
+    //         this.gist();
+    //       }}
+    //     />,
+    //     <Button
+    //       key="Download"
+    //       icon={<GoDesktopDownload />}
+    //       label="Download"
+    //       title="Download Project"
+    //       isDisabled={this.toolbarButtonsAreDisabled()}
+    //       onClick={() => {
+    //         this.download();
+    //       }}
+    //     />,
+    //     <Button
+    //       key="Share"
+    //       icon={<GoRocket />}
+    //       label="Share"
+    //       title={this.state.fiddle ? "Share Project" : "Cannot share a project that has not been forked yet."}
+    //       isDisabled={this.toolbarButtonsAreDisabled() || !this.state.fiddle}
+    //       onClick={() => {
+    //         this.share();
+    //       }}
+    //     />
+    //     );
+    // }
     toolbarButtons.push(
       <Button
         key="Build"
@@ -558,7 +559,19 @@ export class App extends React.Component<AppProps, AppState> {
             onClick={() => {
               deploy();
             }}
+        />,
+
+        <Button
+            key="SwitchNode"
+            icon={<GoRepoForked />}
+            label="Switch Node"
+            title="Switch Node: CtrlCmd + s"
+            isDisabled={this.toolbarButtonsAreDisabled()}
+            onClick={ () => {
+              switchNode();
+            }}
         />
+
       );
     }
     // if (this.props.embeddingParams.type === EmbeddingType.Arc) {
@@ -623,38 +636,38 @@ export class App extends React.Component<AppProps, AppState> {
       if (groups.length === 0) {
         return <div>No Groups</div>;
       }
-      return groups.map((group: Group, i: number) => {
-        // tslint:disable-next-line:jsx-key
-        return <ViewTabs
-          key={`editorPane${i}`}
-          views={group.views.slice(0)}
-          view={group.currentView}
-          preview={group.preview}
-          onSplitViews={() => splitGroup()}
-          hasFocus={activeGroup === group}
-          onFocus={() => {
-            // TODO: Should be taken care of in shouldComponentUpdate instead.
-            focusTabGroup(group);
-          }}
-          onChangeViewType={(view, type) => setViewType(view, type)}
-          onClickView={(view: View) => {
-            if (!(appStore.getActiveTabGroup().currentView === view)) {
-              // Avoids the propagation of content selection between tabs.
-              resetDOMSelection();
-            }
-            focusTabGroup(group);
-            openView(view);
-          }}
-          onDoubleClickView={(view: View) => {
-            focusTabGroup(group);
-            openView(view, false);
-          }}
-          onClose={(view: View) => {
-            focusTabGroup(group);
-            closeView(view);
-          }}
-        />;
-      });
+      // return groups.map((group: Group, i: number) => {
+      //   // tslint:disable-next-line:jsx-key
+      //   return <ViewTabs
+      //     key={`editorPane${i}`}
+      //     views={group.views.slice(0)}
+      //     view={group.currentView}
+      //     preview={group.preview}
+      //     onSplitViews={() => splitGroup()}
+      //     hasFocus={activeGroup === group}
+      //     onFocus={() => {
+      //       // TODO: Should be taken care of in shouldComponentUpdate instead.
+      //       focusTabGroup(group);
+      //     }}
+      //     onChangeViewType={(view, type) => setViewType(view, type)}
+      //     onClickView={(view: View) => {
+      //       if (!(appStore.getActiveTabGroup().currentView === view)) {
+      //         // Avoids the propagation of content selection between tabs.
+      //         resetDOMSelection();
+      //       }
+      //       focusTabGroup(group);
+      //       openView(view);
+      //     }}
+      //     onDoubleClickView={(view: View) => {
+      //       focusTabGroup(group);
+      //       openView(view, false);
+      //     }}
+      //     onClose={(view: View) => {
+      //       focusTabGroup(group);
+      //       closeView(view);
+      //     }}
+      //   />;
+      // });
     };
 
     const editorPanes = <Split

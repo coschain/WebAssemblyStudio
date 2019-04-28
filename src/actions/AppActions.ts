@@ -42,6 +42,10 @@ import {Toast, ToastContainer, ToastProps} from "../components/Toasts";
 import * as React from "react";
 import {start} from "repl";
 import {ContractInfoDialog, ContractInfoDialogProps} from "../components/ContractInfoDialog";
+import {DeployResultAlertProps, DeployResultAlert} from "../components/DeployResultAlert";
+import {SwitchNodeAlert, SwitchNodeAlertProps} from "../components/SwitchNodeAlert";
+import Common from "../common";
+import add from "react-icons/md/add";
 
 export enum AppActionType {
   ADD_FILE_TO = "ADD_FILE_TO",
@@ -392,44 +396,95 @@ export function setViewType(view: View, type: ViewType) {
 }
 
 export async function deploy() {
-    const contract = ContractUtil.getContractByName("defaultContract");
-    // if (contract == null) {
-    //   alert("please build and create abi firstly");
-    //   return;
-    // }
     const priKey = getCachedPriKey();
     const account = getCachedAccountName();
     const prop: ContractInfoDialogProps = {
-        contractName: null,
-        userPrivateKey: priKey,
-        accountName: account,
-        cancelHandler: null,
-        confirmHandler: async (name: string, priKey: string, account: string) => {
-            if (account && priKey && name && account.length > 0 && name.length > 0 && priKey.length > 0) {
-              mdCachedPrivateKey(priKey);
-              // First update default contract name in default contract info
-              ContractUtil.updateDefaultContractName(name);
-              // update cached contract name
-              mdCacheContractName(name);
-              // update cached account name
-              mdCachedAccountName(account);
-
-              pushStatus("Deploy contract");
-              const abi = contract.abi;
-              const code = contract.code;
-              const res = await netApi.deployContract(account, name, abi, code, priKey);
-              if (res.result == null || typeof res.result === "undefined") {
-                // Fail to deploy contract
-                console.log("error code is:%s,msg is:%s", res.errorCode, res.errorMsg);
-              } else {
-                console.log("deploy result is:", res);
-              }
-              popStatus();
-            }
+      contractName: null,
+      userPrivateKey: priKey,
+      accountName: account,
+      cancelHandler: null,
+      confirmHandler: async (name: string, priKey: string, account: string) => {
+        if (account && priKey && name && account.length > 0 && name.length > 0 && priKey.length > 0) {
+          mdCachedPrivateKey(priKey);
+          // update cached contract name
+          mdCacheContractName(name);
+          // update cached account name
+          mdCachedAccountName(account);
         }
+        const res = startDeploy(account, name, priKey);
+      }
     };
     const infoDialog = new ContractInfoDialog(prop);
     infoDialog.showDialog();
-    return;
+}
 
+async function startDeploy(account: string, contractName: string, privKey: string) {
+  const contract = ContractUtil.getContractByName("defaultContract");
+  let isValid = true;
+  if (!contract || (!contract.abi && !contract.code))  {
+    // Build wsam and abi Firstly
+    isValid = false;
+    await buildWsamAndAbi();
+  } else if (!contract.abi) {
+    // Build abi Firstly
+    isValid = false;
+    await abi();
+  } else if (!contract.code) {
+    // Build wsam Firstly
+    isValid = false;
+    await build();
+  }
+  const curContract = isValid ? contract : ContractUtil.getContractByName("defaultContract");
+  if (curContract && !Common.judgeStrIsEmpty(curContract.abi) && curContract.code) {
+    pushStatus("Deploying Contract");
+    const abi = curContract.abi;
+    const code = curContract.code;
+    const res = await netApi.deployContract(account, contractName, abi, code, privKey);
+    const props: DeployResultAlertProps = {type: 0, err: null, txHash: null, handler: null};
+    if (res.result == null || typeof res.result === "undefined") {
+      // Fail to deploy contract
+      props.type = 0;
+      props.err = res.errorMsg ? res.errorMsg.toString() : "";
+    } else {
+      props.type = 1;
+      props.txHash = res.result ? res.result.toString() : "";
+      props.err = "";
+    }
+    showDeployResultAlert(props);
+    popStatus();
+  } else {
+    const props: DeployResultAlertProps = {type: 0, err: "Failed to get wsam and abi, Please build  first", txHash: null, handler: null};
+    showDeployResultAlert(props);
+  }
+}
+
+function showDeployResultAlert(props: DeployResultAlertProps) {
+    if (props) {
+        const resAlert = new DeployResultAlert(props);
+        resAlert.showAlert();
+    }
+}
+
+export function switchNode() {
+     const props: SwitchNodeAlertProps = {
+        curNodeAddr: Common.getCurrentNodeAddress(),
+         confirmHandler: (addr: string) => {
+            if (!Common.judgeStrIsEmpty(addr)) {
+                let isNetAddress = false;
+                if (addr.length >= 4) {
+                    const prefix = addr.substring(0, 4);
+                    if (prefix === "http") {
+                        isNetAddress = true;
+                    }
+                }
+                if (isNetAddress) {
+                    // change node address
+                    Common.mdCurrentNodeAddress(addr);
+                }
+            }
+         },
+         cancelHandler: null
+     };
+     const nodeAlert =  new SwitchNodeAlert(props);
+     nodeAlert.showAlert();
 }

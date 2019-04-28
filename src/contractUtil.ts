@@ -1,4 +1,4 @@
-import {string} from "prop-types";
+import Common from "../src/common";
 
 class ContractInfo {
     contractName: string; // the contract name
@@ -69,7 +69,7 @@ export class ContractUtil {
     }
     // update name of local default contract
     static updateDefaultContractName(name: string): void {
-         if (name.length > 0 && name !== defContName && !contractMap.has(name) && contractMap.has(defContName)) {
+         if (!Common.judgeStrIsEmpty(name) && name !== defContName && !contractMap.has(name) && contractMap.has(defContName)) {
              const contract = contractMap.get(defContName);
              contractMap.set(name, contract);
              contractMap.delete(defContName);
@@ -78,13 +78,13 @@ export class ContractUtil {
 }
 
 export function saveContractName(name: string) {
-    if (name.length > 0 && sessionStorage.getItem(contractNameCacheKey) == null) {
+    if (!Common.judgeStrIsEmpty(name) && sessionStorage.getItem(contractNameCacheKey) == null) {
         sessionStorage.setItem(contractNameCacheKey, name);
     }
 }
 
 export function mdCacheContractName(name: string) {
-    if (name.length > 0) {
+    if (!Common.judgeStrIsEmpty(name)) {
         if (sessionStorage.getItem(contractNameCacheKey))  {
             sessionStorage.setItem(contractNameCacheKey, name);
         } else {
@@ -104,7 +104,7 @@ export function getCachedContractName(): string|null {
 }
 
 export function savePrivateKey(priKey: string) {
-    if (priKey.length > 0 && sessionStorage.getItem(privateKeyCacheKey) == null) {
+    if (!Common.judgeStrIsEmpty(priKey) && sessionStorage.getItem(privateKeyCacheKey) == null) {
         sessionStorage.setItem(privateKeyCacheKey, priKey);
     }
 }
@@ -116,7 +116,7 @@ export function rmCachedPrivateKey() {
 }
 
 export function mdCachedPrivateKey(priKey: string) {
-    if (priKey.length > 0) {
+    if (!Common.judgeStrIsEmpty(priKey)) {
         if (sessionStorage.getItem(privateKeyCacheKey)) {
             sessionStorage.setItem(privateKeyCacheKey, priKey);
         } else {
@@ -130,13 +130,13 @@ export function getCachedPriKey(): string|null {
 }
 
 export  function saveAccountName(name: string) {
-    if (name.length > 0 && sessionStorage.getItem(accountNameCacheKey) == null) {
+    if (!Common.judgeStrIsEmpty(name) && sessionStorage.getItem(accountNameCacheKey) == null) {
         sessionStorage.setItem(accountNameCacheKey, name);
     }
 }
 
 export  function mdCachedAccountName(name: string) {
-    if (name.length > 0) {
+    if (!Common.judgeStrIsEmpty(name)) {
         if (sessionStorage.getItem(accountNameCacheKey) == null)  {
             saveAccountName(name);
         } else  {

@@ -10,7 +10,11 @@ export interface ContractInfoDialogProps {
     cancelHandler: Function;
 }
 
-class ContractInfoView extends React.Component<ContractInfoDialogProps, {}> {
+interface ContractInfoDialogState {
+    visible: boolean;
+}
+
+class ContractInfoView extends React.Component<ContractInfoDialogProps, ContractInfoDialogState> {
     constructor(props: ContractInfoDialogProps) {
         super(props);
         this.state = {
@@ -51,8 +55,15 @@ class ContractInfoView extends React.Component<ContractInfoDialogProps, {}> {
     }
 
     render() {
+        const aniStyle = {
+            animationDuration: 6 + "s",
+            WebkitAnimationDuration: .6 + "s"
+        };
+
+        const isShow = this.state.visible;
+        const aniClassName = "contractInfoDialog-bg" +  " " + "contractInfoDialog-fade-" + (isShow ? "enter" : "leave");
         return (
-        <div className="contractInfoDialog-bg">
+        <div style={aniStyle} className={aniClassName}>
               <div className="contractInfoDialog-card">
                   <div className="contractInfoDialog-headTitle">Edit contract name and private key</div>
                   {/* contract name parts */}

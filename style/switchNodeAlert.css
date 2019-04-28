@@ -1,5 +1,5 @@
 
-.contractInfoDialog-bg {
+.switchNodeAlert-bg {
     position: fixed;
     top: 0;
     left: 0;
@@ -12,15 +12,15 @@
     background-color: rgba(55,55,55,.6);;
 }
 
-.contractInfoDialog-card {
+.switchNodeAlert-card {
     box-sizing: border-box;
     border-radius: 6px;
-    width: 400px;
+    width: 50%;;
     background-color: white;
     padding: 30px;
 }
 
-.contractInfoDialog-headTitle {
+.switchNodeAlert-headTitle {
     font-size: 18px;
     margin-bottom: 15px;
     color: black;
@@ -30,25 +30,11 @@
     word-break: break-word;
 }
 
-.contractInfoDialog-nameTitle {
-    font-size: 14px;
-    text-align: left;
-    color: black;
-    margin-top: 15px;
-}
-
-.contractInfoDialog-priKeyAndAcctTitle {
-    font-size: 14px;
-    text-align: left;
-    color: black;
-    margin-top: 20px;
-}
-
-.contractInfoDialog-input-container {
+.switchNodeAlert-input-container {
     margin-top: 10px;
     width: 100%;
 }
-.contractInfoDialog-Input {
+.switchNodeAlert-Input {
     padding: 0;
     box-sizing: border-box;
     width: 100%;
@@ -56,7 +42,7 @@
     border: 1px solid lightgrey;
     outline-color: #579fff;
 }
-.contractInfoDialog-btnItem {
+.switchNodeAlert-btnItem {
     margin-top: 25px;
     display: flex;
     flex-direction: row;
@@ -64,29 +50,64 @@
     justify-items: center;
 }
 
-.contractInfoDialog-btn {
+.switchNodeAlert-btn {
     border-radius: 4px;
     border-style: none;
     outline-style: none;
     height: 30px;
 }
 
-.contractInfoDialog-btn:active {
+.switchNodeAlert-btn:active {
     opacity: 0.8;
 }
 
-.contractInfoDialog-confirmBtn {
+.switchNodeAlert-confirmBtn {
     background-color: #80bdff;
 }
 
-.contractInfoDialog-cancelBtn {
+.switchNodeAlert-cancelBtn {
     background-color: #d9534f;
 }
 
 
 @media (max-width: 640px) {
-    .contractInfoDialog-card{
+    .switchNodeAlert-card{
         width: 100%;
         margin: 0 30px;
     }
+}
+
+/* fade animation */
+@-webkit-keyframes switchNodeAlert-fade-enter {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes switchNodeAlert-fade-enter {
+    from {
+        opacity: 0;
+    }
+}
+
+.switchNodeAlert-fade-enter {
+    -webkit-animation: switchNodeAlert-fade-enter both ease-in;
+    animation: switchNodeAlert-fade-enter both ease-in;
+}
+
+@-webkit-keyframes switchNodeAlert-fade-leave {
+    to {
+        opacity: 0
+    }
+}
+
+@keyframes switchNodeAlert-fade-leave {
+    to {
+        opacity: 0
+    }
+}
+
+.switchNodeAlert-fade-leave {
+    -webkit-animation: switchNodeAlert-fade-leave both ease-out;
+    animation: switchNodeAlert-fade-leave both ease-out;
 }

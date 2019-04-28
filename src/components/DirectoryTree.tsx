@@ -166,17 +166,17 @@ export class DirectoryTree extends React.Component<DirectoryTreeProps, {
     }
 
     // Directory options
-    if (file instanceof Directory) {
-      this.props.onNewFile && actions.push(new MonacoUtils.Action("x", "New File", "octicon-file-add", true, () => {
-        return this.props.onNewFile(file as Directory);
-      }));
-      this.props.onNewDirectory && actions.push(new MonacoUtils.Action("x", "New Directory", "octicon-file-add", true, () => {
-        return this.props.onNewDirectory(file as Directory);
-      }));
-      this.props.onUploadFile && actions.push(new MonacoUtils.Action("x", "Upload Files", "octicon-cloud-upload", true, () => {
-          return this.props.onUploadFile(file as Directory);
-      }));
-    }
+    // if (file instanceof Directory) {
+    //   this.props.onNewFile && actions.push(new MonacoUtils.Action("x", "New File", "octicon-file-add", true, () => {
+    //     return this.props.onNewFile(file as Directory);
+    //   }));
+    //   this.props.onNewDirectory && actions.push(new MonacoUtils.Action("x", "New Directory", "octicon-file-add", true, () => {
+    //     return this.props.onNewDirectory(file as Directory);
+    //   }));
+    //   this.props.onUploadFile && actions.push(new MonacoUtils.Action("x", "Upload Files", "octicon-cloud-upload", true, () => {
+    //       return this.props.onUploadFile(file as Directory);
+    //   }));
+    // }
 
     // Common file options
     if (!(file instanceof Project)) {
@@ -192,11 +192,11 @@ export class DirectoryTree extends React.Component<DirectoryTreeProps, {
     }
 
     // Create a gist from everything but binary
-    if (!isBinaryFileType(file.type)) {
-      this.props.onCreateGist && actions.push(new MonacoUtils.Action("x", "Create Gist", "octicon-gist", true, () => {
-        return this.props.onCreateGist(file as Directory);
-      }));
-    }
+    // if (!isBinaryFileType(file.type)) {
+    //   this.props.onCreateGist && actions.push(new MonacoUtils.Action("x", "Create Gist", "octicon-gist", true, () => {
+    //     return this.props.onCreateGist(file as Directory);
+    //   }));
+    // }
 
     // File-type specific separated with a ruler
     if (file.type === FileType.Wasm) {

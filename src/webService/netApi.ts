@@ -1,8 +1,8 @@
-import {trxHash} from "cos-grpc-js/src/lib/crypto/trx_hash";
+import Common from "../common";
+import {rejects} from "assert";
 
 const cosSdk = require("cos-grpc-js");
 const grpc = require("@improbable-eng/grpc-web").grpc;
-const host = "http://localhost:8080";
 
 // @ts-ignore
 async function fetchSignedTrx(parameters: { privKey: any, ops: any }) {
@@ -10,10 +10,10 @@ async function fetchSignedTrx(parameters: { privKey: any, ops: any }) {
     const tx = new cosSdk.transaction.transaction();
     const nonParamsRequest = new cosSdk.grpc.NonParamsRequest();
     // @ts-ignore
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
             return grpc.unary(cosSdk.grpc_service.ApiService.GetChainState, {
                 request: nonParamsRequest,
-                host: host,
+                host: Common.getCurrentNodeAddress(),
                 onEnd: (res: object) => {
                     try {
                         // @ts-ignore
@@ -40,14 +40,10 @@ async function fetchSignedTrx(parameters: { privKey: any, ops: any }) {
                             signTx.setSignature(signature);
                             resolve(signTx);
                         } else {
-                            resolve({msg: statusMessage});
+                            reject(statusMessage);
                         }
                     } catch (err) {
-                        const res = {
-                            tx: status,
-                            err: err,
-                        };
-                        resolve(res);
+                        reject(err);
                     }
 
                 }
@@ -66,8 +62,7 @@ async function fetchSignedTrx(parameters: { privKey: any, ops: any }) {
     });
 }
 
-// @ts-ignore
-module.exports = {
+export default {
     cosSdk,
     fetchSignedTrx,
     deployContract: async function(owner: string, contractName: string, abi: string, code: Uint8Array|string, privKey: string) {
@@ -100,6 +95,8 @@ module.exports = {
                 };
             }
             const signedTx = txRes.tx;
+
+            const txHash = signedTx.id().getHexHash();
             const req = new cosSdk.grpc.BroadcastTrxRequest();
             req.setOnlyDeliver(false);
             req.setTransaction(signedTx);
@@ -107,7 +104,7 @@ module.exports = {
                 // @ts-ignore
                 grpc.unary(cosSdk.grpc_service.ApiService.BroadcastTrx, {
                     request: req,
-                    host: host,
+                    host: Common.getCurrentNodeAddress(),
                     onEnd: (res: object) => {
                         // @ts-ignore
                         const {status, statusMessage, headers, message, trailers} = res;
@@ -132,7 +129,7 @@ module.exports = {
                 });
             }).then((res) => {
                 return {
-                    result: res,
+                    result: txHash,
                     errorCode: null,
                     errorMsg: null,
                 };

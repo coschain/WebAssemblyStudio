@@ -1,0 +1,117 @@
+
+.deployResultAlert-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2001;
+    background-color: rgba(55,55,55,.6);;
+}
+
+
+.deployResultAlert-card {
+    box-sizing: border-box;
+    border-radius: 6px;
+    width: 400px;
+    background-color: white;
+    padding: 30px;
+}
+
+.deployResultAlert-headTitle {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+.deployResultAlert-descBox {
+    font-size: 14px;
+    color: black;
+    word-break: break-word;
+    word-wrap: break-word;
+    margin-top: 25px;
+    text-align: center;
+}
+
+.deployResultAlert-desc {
+    display: inline-block;
+    text-align: left;
+}
+
+.deployResultAlert-btnItem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.deployResultAlert-confirmBtn {
+    margin-top: 25px;
+    height: 30px;
+    background-color: #007bff;
+    outline-style: none;
+    border-style: none;
+    border-radius: 6px;
+}
+
+.deployResultAlert-confirmBtn:active {
+    opacity: .8;
+}
+
+.link_style {
+    color:#0057FF;
+    text-decoration:none;
+}
+
+.link_style:hover {
+    text-decoration:underline;
+}
+
+@media (max-width: 640px) {
+    .deployResultAlert-card{
+        width: 100%;
+        margin: 0 30px;
+    }
+}
+
+/* Alert fade animation */
+@-webkit-keyframes deployResultAlert-fade-enter {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes deployResultAlert-fade-enter {
+    from {
+        opacity: 0;
+    }
+}
+
+.deployResultAlert-fade-enter {
+    -webkit-animation: deployResultAlert-fade-enter both ease-in;
+    animation: deployResultAlert-fade-enter both ease-in;
+}
+
+@-webkit-keyframes deployResultAlert-fade-leave {
+    to {
+        opacity: 0
+    }
+}
+
+@keyframes deployResultAlert-fade-leave {
+    to {
+        opacity: 0
+    }
+}
+
+.deployResultAlert-fade-leave {
+    -webkit-animation: deployResultAlert-fade-leave both ease-out;
+    animation: deployResultAlert-fade-leave both ease-out;
+}
