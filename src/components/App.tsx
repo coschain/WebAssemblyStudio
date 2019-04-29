@@ -636,38 +636,38 @@ export class App extends React.Component<AppProps, AppState> {
       if (groups.length === 0) {
         return <div>No Groups</div>;
       }
-      // return groups.map((group: Group, i: number) => {
-      //   // tslint:disable-next-line:jsx-key
-      //   return <ViewTabs
-      //     key={`editorPane${i}`}
-      //     views={group.views.slice(0)}
-      //     view={group.currentView}
-      //     preview={group.preview}
-      //     onSplitViews={() => splitGroup()}
-      //     hasFocus={activeGroup === group}
-      //     onFocus={() => {
-      //       // TODO: Should be taken care of in shouldComponentUpdate instead.
-      //       focusTabGroup(group);
-      //     }}
-      //     onChangeViewType={(view, type) => setViewType(view, type)}
-      //     onClickView={(view: View) => {
-      //       if (!(appStore.getActiveTabGroup().currentView === view)) {
-      //         // Avoids the propagation of content selection between tabs.
-      //         resetDOMSelection();
-      //       }
-      //       focusTabGroup(group);
-      //       openView(view);
-      //     }}
-      //     onDoubleClickView={(view: View) => {
-      //       focusTabGroup(group);
-      //       openView(view, false);
-      //     }}
-      //     onClose={(view: View) => {
-      //       focusTabGroup(group);
-      //       closeView(view);
-      //     }}
-      //   />;
-      // });
+      return groups.map((group: Group, i: number) => {
+        // tslint:disable-next-line:jsx-key
+        return <ViewTabs
+          key={`editorPane${i}`}
+          views={group.views.slice(0)}
+          view={group.currentView}
+          preview={group.preview}
+          onSplitViews={() => splitGroup()}
+          hasFocus={activeGroup === group}
+          onFocus={() => {
+            // TODO: Should be taken care of in shouldComponentUpdate instead.
+            focusTabGroup(group);
+          }}
+          onChangeViewType={(view, type) => setViewType(view, type)}
+          onClickView={(view: View) => {
+            if (!(appStore.getActiveTabGroup().currentView === view)) {
+              // Avoids the propagation of content selection between tabs.
+              resetDOMSelection();
+            }
+            focusTabGroup(group);
+            openView(view);
+          }}
+          onDoubleClickView={(view: View) => {
+            focusTabGroup(group);
+            openView(view, false);
+          }}
+          onClose={(view: View) => {
+            focusTabGroup(group);
+            closeView(view);
+          }}
+        />;
+      });
     };
 
     const editorPanes = <Split
