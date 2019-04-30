@@ -1,7 +1,7 @@
 {
   "serviceUrl": "//wasmexplorer-service.herokuapp.com/service.php",
-  "clang": "//127.0.0.1:8083/build",
-  "abi": "//127.0.0.1:8083/abi",
+  "clang": "//ecs-contento-testnet-studio-1403540018.us-east-1.elb.amazonaws.com/build",
+  "abi": "//ecs-contento-testnet-studio-1403540018.us-east-1.elb.amazonaws.com/abi",
   "rustc": "//webassembly-studio-rust.herokuapp.com/rustc",
   "cargo": "//webassembly-studio-rust.herokuapp.com/cargo",
   "templates": {
