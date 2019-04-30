@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import "../../style/ContractInfoDialog.css";
+import "../../style/contractInfoDialog.css";
 
 export interface ContractInfoDialogProps {
     contractName: string;
