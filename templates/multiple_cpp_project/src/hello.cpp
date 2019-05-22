@@ -1,6 +1,6 @@
 #include <cosiolib/contract.hpp>
 #include <cosiolib/print.hpp>
-#include "i18n.hpp"
+#include "i18n.h"
 
 // the contract class
 class hello_i18n : public cosio::contract {
