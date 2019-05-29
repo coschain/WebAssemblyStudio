@@ -1,5 +1,6 @@
 import Common from "../common";
 import {rejects} from "assert";
+import * as zlib from "zlib";
 
 const cosSdk = require("cos-grpc-js");
 const grpc = require("@improbable-eng/grpc-web").grpc;
@@ -75,13 +76,41 @@ export default {
             conName.setValue(contractName);
             contractOp.setOwner(creator);
             contractOp.setContract(contractName);
-            contractOp.setAbi(abi);
-            let wsam = code;
+            contractOp.setUpgradeable(true);
+            zlib.deflate(abi, function(err: Error | null, result: Buffer) {
+                if (err) {
+                    console.log("Fail to compress abi, the error is ", err);
+                    return {
+                        result: null,
+                        errorCode: null,
+                        errorMsg: "Fail to compress abi, the error is " + err,
+                    };
+                } else {
+                    const abiArray = new Uint8Array(result);
+                    contractOp.setAbi(abiArray);
+                }
+            });
+            const wsam = code;
+            let buf = wsam;
             if (typeof code === "string") {
-                const buffer = Buffer.from(code, "hex");
-                wsam = new Uint8Array(buffer);
+                buf = Buffer.from(code, "hex");
             }
-            contractOp.setCode(wsam);
+            if (wsam instanceof  Uint8Array) {
+                buf  = Buffer.from(wsam);
+            }
+            zlib.deflate(buf, function(err: Error | null, result: Buffer) {
+                if (err) {
+                    console.log("Fail to compress wasm, the error is ", err);
+                    return {
+                        result: null,
+                        errorCode: null,
+                        errorMsg: "Fail to compress wsam, the error is " + err,
+                    };
+                } else {
+                    const wsamArray = new Uint8Array(result);
+                    contractOp.setCode(wsamArray);
+                }
+            });
             // Firstly fetch signed trx
             const txRes = await fetchSignedTrx({
                 privKey: cosSdk.crypto.privKeyFromWIF(privKey),
