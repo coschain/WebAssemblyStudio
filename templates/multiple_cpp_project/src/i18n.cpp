@@ -1,6 +1,6 @@
 #include "i18n.h"
 
-registered_i18n::registered_i18n {
+registered_i18n::registered_i18n() {
 	m_map["chinese"] = "你好";
 	m_map["russian"] = "привет";
 	m_map["japanese"] = "こんにちは";
