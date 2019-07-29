@@ -403,7 +403,7 @@ export async function deploy() {
       userPrivateKey: priKey,
       accountName: account,
       cancelHandler: null,
-      confirmHandler: async (name: string, priKey: string, account: string) => {
+      confirmHandler: async (name: string, priKey: string, account: string, desc: string, sourceCodeLocation: string) => {
         if (account && priKey && name && account.length > 0 && name.length > 0 && priKey.length > 0) {
           mdCachedPrivateKey(priKey);
           // update cached contract name
@@ -411,14 +411,14 @@ export async function deploy() {
           // update cached account name
           mdCachedAccountName(account);
         }
-        const res = startDeploy(account, name, priKey);
+        const res = startDeploy(account, name, priKey, desc, sourceCodeLocation);
       }
     };
     const infoDialog = new ContractInfoDialog(prop);
     infoDialog.showDialog();
 }
 
-async function startDeploy(account: string, contractName: string, privKey: string) {
+async function startDeploy(account: string, contractName: string, privKey: string, desc: string, sourceCodeLocation: string) {
   const contract = ContractUtil.getContractByName("defaultContract");
   let isValid = true;
   if (!contract || (!contract.abi && !contract.code))  {
@@ -439,7 +439,7 @@ async function startDeploy(account: string, contractName: string, privKey: strin
     pushStatus("Deploying Contract");
     const abi = curContract.abi;
     const code = curContract.code;
-    const res = await netApi.deployContract(account, contractName, abi, code, privKey);
+    const res = await netApi.deployContract(account, contractName, abi, code, privKey, desc, sourceCodeLocation);
     const props: DeployResultAlertProps = {type: 0, err: null, txHash: null, handler: null};
     if (res.result == null || typeof res.result === "undefined") {
       // Fail to deploy contract

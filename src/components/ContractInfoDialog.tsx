@@ -26,6 +26,8 @@ class ContractInfoView extends React.Component<ContractInfoDialogProps, Contract
         contractName: "contName",
         accountName: "acctName",
         priKey: "prikey",
+        desc: "desc",
+        sourceCodeLocation: "surCodeLocation"
     }
 
     private onClickClose = () =>  {
@@ -43,9 +45,13 @@ class ContractInfoView extends React.Component<ContractInfoDialogProps, Contract
         const key = priKeyInput.value;
         const acctInput = document.getElementById(this.elTagType.accountName) as HTMLInputElement;
         const acctName = acctInput.value;
+        const descInput = document.getElementById(this.elTagType.desc) as HTMLInputElement;
+        const desc = descInput.value;
+        const sourceCodeInput = document.getElementById(this.elTagType.sourceCodeLocation) as HTMLInputElement;
+        const sourceCodeLocation = sourceCodeInput.value;
         if (name.length > 0 && key.length > 0 && acctName.length > 0) {
             if (this.props.confirmHandler) {
-                this.props.confirmHandler(name, key, acctName);
+                this.props.confirmHandler(name, key, acctName, desc, sourceCodeLocation);
             }
         }
     }
@@ -84,6 +90,18 @@ class ContractInfoView extends React.Component<ContractInfoDialogProps, Contract
                       <input id={this.elTagType.priKey} className="contractInfoDialog-Input" type="text" autoComplete="off" defaultValue={this.props.userPrivateKey}/>
                   </div>
 
+                  {/*Description*/}
+                  <div className="contractInfoDialog-priKeyAndAcctTitle">Description:</div>
+                  <div className="contractInfoDialog-input-container">
+                      <input id={this.elTagType.desc} className="contractInfoDialog-Input" type="text" autoComplete="off" />
+                  </div>
+
+                  {/*source code location*/}
+                  <div className="contractInfoDialog-priKeyAndAcctTitle">Source code location:</div>
+                  <div className="contractInfoDialog-input-container">
+                      <input id={this.elTagType.sourceCodeLocation} className="contractInfoDialog-Input" type="text" autoComplete="off" />
+                  </div>
+
                   {/* buttons */}
                   <div className="contractInfoDialog-btnItem">
                       <button className="contractInfoDialog-btn contractInfoDialog-confirmBtn"  onClick={this.onClickConfirm} > Confirm </button>
@@ -109,9 +127,9 @@ export class ContractInfoDialog {
         this.closeDialog();
     }
 
-    private confirmHandler = (name: string, priKey: string, account: string) => {
+    private confirmHandler = (name: string, priKey: string, account: string, desc: string, sourceCodeLocation: string) => {
         if (this.props.confirmHandler) {
-            this.props.confirmHandler(name, priKey, account);
+            this.props.confirmHandler(name, priKey, account, desc, sourceCodeLocation);
         }
         this.closeDialog();
     }

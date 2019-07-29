@@ -33,9 +33,12 @@ async function fetchSignedTrx(parameters: { privKey: any, ops: any }) {
                             for (const op of ops) {
                                 tx.addOperation(op);
                             }
+                            const chainId = new cosSdk.raw_type.chain_id();
+                            chainId.setChainEnv("test");
+
                             const signTx = new cosSdk.transaction.signed_transaction();
                             signTx.setTrx(tx);
-                            const s = signTx.sign(privKey);
+                            const s = signTx.sign(privKey, chainId);
                             const signature = new cosSdk.raw_type.signature_type();
                             signature.setSig(s);
                             signTx.setSignature(signature);
@@ -44,6 +47,7 @@ async function fetchSignedTrx(parameters: { privKey: any, ops: any }) {
                             reject(statusMessage);
                         }
                     } catch (err) {
+                        console.log("error is", err);
                         reject(err);
                     }
 
@@ -66,7 +70,8 @@ async function fetchSignedTrx(parameters: { privKey: any, ops: any }) {
 export default {
     cosSdk,
     fetchSignedTrx,
-    deployContract: async function(owner: string, contractName: string, abi: string, code: Uint8Array|string, privKey: string) {
+    deployContract: async function(owner: string, contractName: string, abi: string, code: Uint8Array|string,
+                                   privKey: string, desc: string, sourceCodeLocation: string) {
         try {
             // create  deploy operation
             const contractOp = new cosSdk.operation.contract_deploy_operation();
@@ -77,6 +82,8 @@ export default {
             contractOp.setOwner(creator);
             contractOp.setContract(contractName);
             contractOp.setUpgradeable(true);
+            contractOp.setDescribe(desc);
+            contractOp.setUrl(sourceCodeLocation);
             zlib.deflate(abi, function(err: Error | null, result: Buffer) {
                 if (err) {
                     console.log("Fail to compress abi, the error is ", err);
