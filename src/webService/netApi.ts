@@ -1,6 +1,7 @@
 import Common from "../common";
 import {rejects} from "assert";
 import * as zlib from "zlib";
+import {array} from "prop-types";
 
 const cosSdk = require("cos-grpc-js");
 const grpc = require("@improbable-eng/grpc-web").grpc;
@@ -24,7 +25,8 @@ async function fetchSignedTrx(parameters: { privKey: any, ops: any }) {
                             // @ts-ignore
                             tx.setRefBlockNum(chainState.state.dgpo.headBlockNumber & 0x7ff);
                             // @ts-ignore
-                            tx.setRefBlockPrefix(chainState.state.dgpo.headBlockPrefix);
+                            const buffer = Buffer.from(chainState.state.dgpo.headBlockId.hash.toString(), "base64");
+                            tx.setRefBlockPrefix(bytes2BigEndUint32(buffer.slice(8, 12)));
                             // @ts-ignore
                             const expiration = new cosSdk.raw_type.time_point_sec();
                             // @ts-ignore
@@ -185,4 +187,8 @@ export default {
             };
         }
     }
+};
+
+const bytes2BigEndUint32 = function(byteArray: Buffer) {
+    return (byteArray[3] | byteArray[2] << 8 | byteArray[1] << 16 | byteArray[0] << 24) >>> 0;
 };
