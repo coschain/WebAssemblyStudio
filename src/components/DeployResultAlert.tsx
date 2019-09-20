@@ -95,7 +95,7 @@ export class DeployResultAlert extends React.Component<DeployResultAlertProps, D
             txHash = this.props.txHash;
         }
         let desDiv = <div className={"deployResultAlert-desc"}>
-            <span>Successful deployment contract, You can view it by transaction hash: <a className={"link_style"} href={"http://explorer.contentos.io/#/tx/" + txHash} target={"_blank"}>{txHash}</a>
+            <span>Successful deployment contract, You can view it by transaction hash: <a className={"link_style"} href={"http://testexplorer.contentos.io/#/tx/" + txHash} target={"_blank"}>{txHash}</a>
                        </span>
                     </div>;
 
