@@ -561,7 +561,7 @@ export class App extends React.Component<AppProps, AppState> {
             }}
         />,
 
-        <Button
+        /*<Button
             key="SwitchNode"
             icon={<GoRepoForked />}
             label="Switch Node"
@@ -570,7 +570,7 @@ export class App extends React.Component<AppProps, AppState> {
             onClick={ () => {
               switchNode();
             }}
-        />
+        />*/
 
       );
     }

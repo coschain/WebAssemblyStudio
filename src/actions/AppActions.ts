@@ -403,7 +403,7 @@ export async function deploy() {
       userPrivateKey: priKey,
       accountName: account,
       cancelHandler: null,
-      confirmHandler: async (name: string, priKey: string, account: string, desc: string, sourceCodeLocation: string) => {
+      confirmHandler: async (name: string, priKey: string, account: string, desc: string, sourceCodeLocation: string, isToMainNet: boolean) => {
         if (account && priKey && name && account.length > 0 && name.length > 0 && priKey.length > 0) {
           mdCachedPrivateKey(priKey);
           // update cached contract name
@@ -411,14 +411,14 @@ export async function deploy() {
           // update cached account name
           mdCachedAccountName(account);
         }
-        const res = startDeploy(account, name, priKey, desc, sourceCodeLocation);
+        const res = startDeploy(account, name, priKey, desc, sourceCodeLocation, isToMainNet);
       }
     };
     const infoDialog = new ContractInfoDialog(prop);
     infoDialog.showDialog();
 }
 
-async function startDeploy(account: string, contractName: string, privKey: string, desc: string, sourceCodeLocation: string) {
+async function startDeploy(account: string, contractName: string, privKey: string, desc: string, sourceCodeLocation: string, isToMainNet: boolean) {
   const contract = ContractUtil.getContractByName("defaultContract");
   let isValid = true;
   if (!contract || (!contract.abi && !contract.code))  {
@@ -439,8 +439,8 @@ async function startDeploy(account: string, contractName: string, privKey: strin
     pushStatus("Deploying Contract");
     const abi = curContract.abi;
     const code = curContract.code;
-    const res = await netApi.deployContract(account, contractName, abi, code, privKey, desc, sourceCodeLocation);
-    const props: DeployResultAlertProps = {type: 0, err: null, txHash: null, handler: null};
+    const res = await netApi.deployContract(account, contractName, abi, code, privKey, desc, sourceCodeLocation, isToMainNet);
+    const props: DeployResultAlertProps = {type: 0, err: null, txHash: null, handler: null, isMainNet: isToMainNet};
     if (res.result == null || typeof res.result === "undefined") {
       // Fail to deploy contract
       props.type = 0;
@@ -453,7 +453,7 @@ async function startDeploy(account: string, contractName: string, privKey: strin
     showDeployResultAlert(props);
     popStatus();
   } else {
-    const props: DeployResultAlertProps = {type: 0, err: "Failed to get wsam and abi, Please build  first", txHash: null, handler: null};
+    const props: DeployResultAlertProps = {type: 0, err: "Failed to get wsam and abi, Please build  first", txHash: null, handler: null, isMainNet: isToMainNet};
     showDeployResultAlert(props);
   }
 }

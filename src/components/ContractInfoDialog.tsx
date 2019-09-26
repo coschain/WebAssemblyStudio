@@ -1,6 +1,9 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import "../../style/contractInfoDialog.css";
+import radio from "react-icons/md/radio";
+import {int2bytes} from "cos-grpc-js/src/lib/crypto/util";
+import {number} from "prop-types";
 
 export interface ContractInfoDialogProps {
     contractName: string;
@@ -14,6 +17,7 @@ interface ContractInfoDialogState {
     visible: boolean;
 }
 
+
 class ContractInfoView extends React.Component<ContractInfoDialogProps, ContractInfoDialogState> {
     constructor(props: ContractInfoDialogProps) {
         super(props);
@@ -22,13 +26,16 @@ class ContractInfoView extends React.Component<ContractInfoDialogProps, Contract
         };
     }
 
+    private isDeployToMainNet = true;
+
     private elTagType = {
         contractName: "contName",
         accountName: "acctName",
         priKey: "prikey",
         desc: "desc",
-        sourceCodeLocation: "surCodeLocation"
-    }
+        sourceCodeLocation: "surCodeLocation",
+        deployChoice: "deploySelect"
+    };
 
     private onClickClose = () =>  {
         this.setState({visible: false});
@@ -37,8 +44,12 @@ class ContractInfoView extends React.Component<ContractInfoDialogProps, Contract
         }
     }
 
+    private chainType = {
+        MainNet: 1,
+        TestNet: 2
+    }
+
     private onClickConfirm = () => {
-        this.setState({visible: false});
         const nameInput = document.getElementById(this.elTagType.contractName) as HTMLInputElement;
         const name = nameInput.value;
         const priKeyInput = document.getElementById(this.elTagType.priKey) as HTMLInputElement;
@@ -50,9 +61,19 @@ class ContractInfoView extends React.Component<ContractInfoDialogProps, Contract
         const sourceCodeInput = document.getElementById(this.elTagType.sourceCodeLocation) as HTMLInputElement;
         const sourceCodeLocation = sourceCodeInput.value;
         if (name.length > 0 && key.length > 0 && acctName.length > 0) {
+            this.setState({visible: false});
             if (this.props.confirmHandler) {
-                this.props.confirmHandler(name, key, acctName, desc, sourceCodeLocation);
+                this.props.confirmHandler(name, key, acctName, desc, sourceCodeLocation, this.isDeployToMainNet);
             }
+        }
+    }
+
+    private onChangeDeployChoice = (event: any) => {
+        const selctVal = event.target.value;
+        if (selctVal === this.chainType.MainNet) {
+            this.isDeployToMainNet = true;
+        } else {
+            this.isDeployToMainNet = false;
         }
     }
 
@@ -102,6 +123,14 @@ class ContractInfoView extends React.Component<ContractInfoDialogProps, Contract
                       <input id={this.elTagType.sourceCodeLocation} className="contractInfoDialog-Input" type="text" autoComplete="off" />
                   </div>
 
+                  <div className="contractInfoDialog-deploy-select-bg">
+                      <div className="contractInfoDialog-priKeyAndAcctTitle">Select Chain</div>
+                      <select className="contractInfoDialog-select"  id={this.elTagType.deployChoice} onChange={this.onChangeDeployChoice} >
+                          <option value={this.chainType.MainNet}>Deploy to Main Net</option>
+                          <option value={this.chainType.TestNet}>Deploy to Test Net</option>
+                      </select>
+                  </div>
+
                   {/* buttons */}
                   <div className="contractInfoDialog-btnItem">
                       <button className="contractInfoDialog-btn contractInfoDialog-confirmBtn"  onClick={this.onClickConfirm} > Confirm </button>
@@ -127,9 +156,9 @@ export class ContractInfoDialog {
         this.closeDialog();
     }
 
-    private confirmHandler = (name: string, priKey: string, account: string, desc: string, sourceCodeLocation: string) => {
+    private confirmHandler = (name: string, priKey: string, account: string, desc: string, sourceCodeLocation: string, isToMainNet: boolean) => {
         if (this.props.confirmHandler) {
-            this.props.confirmHandler(name, priKey, account, desc, sourceCodeLocation);
+            this.props.confirmHandler(name, priKey, account, desc, sourceCodeLocation, isToMainNet);
         }
         this.closeDialog();
     }

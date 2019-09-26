@@ -1,21 +1,23 @@
+
 import Common from "../common";
 import {rejects} from "assert";
 import * as zlib from "zlib";
 import {array} from "prop-types";
+import {isCombinedNodeFlagSet} from "tslint";
 
 const cosSdk = require("cos-grpc-js");
 const grpc = require("@improbable-eng/grpc-web").grpc;
 
 // @ts-ignore
-async function fetchSignedTrx(parameters: { privKey: any, ops: any }) {
-    const {privKey, ops} = parameters;
+async function fetchSignedTrx(parameters: { privKey: any, ops: any, cId: string, apiHost: string}) {
+    const {privKey, ops, cId, apiHost} = parameters;
     const tx = new cosSdk.transaction.transaction();
     const nonParamsRequest = new cosSdk.grpc.NonParamsRequest();
     // @ts-ignore
     return new Promise((resolve, reject) => {
             return grpc.unary(cosSdk.grpc_service.ApiService.GetChainState, {
                 request: nonParamsRequest,
-                host: Common.getCurrentNodeAddress(),
+                host: apiHost,
                 onEnd: (res: object) => {
                     try {
                         // @ts-ignore
@@ -36,7 +38,7 @@ async function fetchSignedTrx(parameters: { privKey: any, ops: any }) {
                                 tx.addOperation(op);
                             }
                             const chainId = new cosSdk.raw_type.chain_id();
-                            chainId.setChainEnv("test");
+                            chainId.setChainEnv(cId);
 
                             const signTx = new cosSdk.transaction.signed_transaction();
                             signTx.setTrx(tx);
@@ -73,7 +75,7 @@ export default {
     cosSdk,
     fetchSignedTrx,
     deployContract: async function(owner: string, contractName: string, abi: string, code: Uint8Array|string,
-                                   privKey: string, desc: string, sourceCodeLocation: string) {
+                                   privKey: string, desc: string, sourceCodeLocation: string, isToMainNet: boolean) {
         try {
             // create  deploy operation
             const contractOp = new cosSdk.operation.contract_deploy_operation();
@@ -121,9 +123,12 @@ export default {
                 }
             });
             // Firstly fetch signed trx
+            const apiHost = isToMainNet ? "http://mainnode.contentos.io" : "https://testnode.contentos.io";
             const txRes = await fetchSignedTrx({
                 privKey: cosSdk.crypto.privKeyFromWIF(privKey),
-                ops: [contractOp]
+                ops: [contractOp],
+                cId: isToMainNet ? "main" : "test",
+                apiHost: apiHost
             });
             if (txRes.tx == null) {
                 return {
@@ -142,7 +147,7 @@ export default {
                 // @ts-ignore
                 grpc.unary(cosSdk.grpc_service.ApiService.BroadcastTrx, {
                     request: req,
-                    host: Common.getCurrentNodeAddress(),
+                    host: apiHost,
                     onEnd: (res: object) => {
                         // @ts-ignore
                         const {status, statusMessage, headers, message, trailers} = res;

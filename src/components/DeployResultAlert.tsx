@@ -8,6 +8,7 @@ export interface DeployResultAlertProps {
     err: string; //  the detail error info
     txHash: string; // the tx hash if deploy success
     handler: Function; // the call back
+    isMainNet: boolean; // main net or test net
 }
 
 interface DeployResultAlertState {
@@ -94,8 +95,9 @@ export class DeployResultAlert extends React.Component<DeployResultAlertProps, D
         if (this.props.txHash) {
             txHash = this.props.txHash;
         }
+        const host = this.props.isMainNet ? "https://explorer.contentos.io/#/tx/" : "https://testexplorer.contentos.io/#/tx/";
         let desDiv = <div className={"deployResultAlert-desc"}>
-            <span>Successful deployment contract, You can view it by transaction hash: <a className={"link_style"} href={"http://testexplorer.contentos.io/#/tx/" + txHash} target={"_blank"}>{txHash}</a>
+            <span>Successful deployment contract, You can view it by transaction hash: <a className={"link_style"} href={host + txHash} target={"_blank"}>{txHash}</a>
                        </span>
                     </div>;
 
